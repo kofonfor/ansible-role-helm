@@ -1,0 +1,11 @@
+- name: download Helm
+  get_url: url=https://storage.googleapis.com/kubernetes-helm/helm-{{ helm_version }}-linux-amd64.tar.gz dest=/root/helm-{{ helm_version }}-linux-amd64.tar.gz
+
+- name: mkdir /opt/helm
+  file: dest=/opt/helm state=directory
+
+- name: unpack Helm
+  unarchive: copy=no src="/root/helm-{{ helm_version }}-linux-amd64.tar.gz" dest=/opt/helm/
+
+- name: link helm to /usr/local/bin
+  file: state=link src=/opt/helm/linux-amd64/helm dest=/usr/local/bin/helm
