@@ -9,3 +9,18 @@
 
 - name: link helm to /usr/local/bin
   file: state=link src=/opt/helm/linux-amd64/helm dest=/usr/local/bin/helm
+
+- name: put an SA and a CRB description file
+  template: src=rbac-sa.yml dest=/root/rbac-sa.yml
+
+- name: check if Etcd cluster exists
+  shell: kubectl get clusterrolebinding | grep tiller
+  register: result
+  ignore_errors: true
+
+- name: create a SA and a CRB for it
+  shell: kubectl create -f /root/rbac-sa.yml
+  when: result|failed
+
+- name: init Helm
+  shell: helm init --service-account tiller
