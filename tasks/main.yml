@@ -14,13 +14,14 @@
   template: src=rbac-sa.yml dest=/root/rbac-sa.yml
 
 - name: check if a cluster role binding exists
-  shell: kubectl get clusterrolebinding | grep tiller
+  shell: export KUBECONFIG=/etc/kubernetes/admin.conf && kubectl get clusterrolebinding | grep tiller
   register: result
   ignore_errors: true
+  changed_when: false
 
 - name: create a SA and a CRB for it
-  shell: kubectl create -f /root/rbac-sa.yml
-  when: result|failed
+  shell: export KUBECONFIG=/etc/kubernetes/admin.conf && kubectl create -f /root/rbac-sa.yml
+  when: result is failed
 
 - name: init Helm
-  shell: helm init --service-account tiller
+  shell: export KUBECONFIG=/etc/kubernetes/admin.conf && helm init --service-account tiller
